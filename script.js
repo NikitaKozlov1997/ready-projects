@@ -8,6 +8,7 @@ let MemoryCurrentNumber = 0;
 let MemoryNewNumber = false;
 let MemoryPendingOperation = '';
 
+
 for (var i = 0; i < numbers.length; i++) {
   var number = numbers[i];
   number.addEventListener('click', function (e) {
@@ -31,32 +32,26 @@ for (var i = 0; i < clearBtns.length; i++) {
 
 decimalBtn.addEventListener('click', decimal);
 
-function numberPress(number) {
-  if (MemoryNewNumber) {
-    display.value = number;
-    MemoryNewNumber = false;
-  } else {
-    if (display.value === '0') {
-      display.value = number;
-    } else {
-      display.value += number;
-    }
-  }
-}
-
 function operationPress(op) {
   let localOperationMemory = display.value;
-
+ 
   if (MemoryNewNumber && MemoryPendingOperation !== '=') {
+    if (MemoryPendingOperation === '√') {
+      MemoryNewNumber = true;
+      MemoryCurrentNumber = Math.sqrt(MemoryCurrentNumber);
+      display.value = MemoryCurrentNumber;
+      MemoryPendingOperation = op;
+         }
+    
     display.value = MemoryCurrentNumber;
   } else {
     MemoryNewNumber = true;
     if (MemoryPendingOperation === '+') {
       MemoryCurrentNumber += +localOperationMemory;
-    } else if (MemoryPendingOperation === '-') {
-      MemoryCurrentNumber -= +localOperationMemory;
     } else if (MemoryPendingOperation === '*') {
       MemoryCurrentNumber *= +localOperationMemory;
+    } else if (MemoryPendingOperation === '^') {
+      MemoryCurrentNumber = Math.pow(MemoryCurrentNumber, localOperationMemory);
     } else if (MemoryPendingOperation === '/') {
       MemoryCurrentNumber /= +localOperationMemory;
     } else {
@@ -66,6 +61,36 @@ function operationPress(op) {
     MemoryPendingOperation = op;
   }
 }
+
+function numberPress(number) {
+
+  if (MemoryNewNumber) {
+    display.value = number;
+    MemoryNewNumber = false;
+  } else
+   if(display.value.indexOf('-') === -1 || (display.value[0] === '-' && countChars(display.value, '-') === 1)){
+    if (display.value === '0') {
+      display.value = number;
+    } else {
+      display.value += number;
+    }
+  }
+}
+const countChars = (str, char) => {
+  let i = 0;
+  let count = 0;
+  while (i < str.length) {
+    if (str[i] === char) {
+      // Считаем только подходящие символы
+      count = count + 1;
+    }
+    // Счетчик увеличивается в любом случае
+    i = i + 1;
+  }
+
+  return count;
+};
+
 
 function decimal(argument) {
   let localDecimalMemory = display.value;
